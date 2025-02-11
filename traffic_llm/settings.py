@@ -66,6 +66,7 @@ WSGI_APPLICATION = 'traffic_llm.wsgi.application'
 
 # Database
 DATABASE_URL = os.getenv('DATABASE_URL')
+
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
@@ -75,7 +76,8 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / "db.sqlite3",
+            # Convertimos la ruta a string para evitar el error con PosixPath
+            'NAME': str(BASE_DIR / "db.sqlite3"),
         }
     }
 
@@ -111,7 +113,6 @@ if not DEBUG:
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración del servicio de optimización
-# En producción, ajusta la URL y el modo según sea necesario.
+# Puedes parametrizar la URL y el modo del servicio de optimización mediante variables de entorno
 OPTIMIZATION_SERVICE_URL = os.environ.get('OPTIMIZATION_SERVICE_URL', "http://127.0.0.1:5000/optimize")
-OPTIMIZATION_MODE = os.environ.get('OPTIMIZATION_MODE', "test")  # Cambia a "real" cuando uses el servicio externo
-
+OPTIMIZATION_MODE = os.environ.get('OPTIMIZATION_MODE', "test")  # Cambia a "real" en producción si corresponde
