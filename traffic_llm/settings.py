@@ -1,27 +1,24 @@
-import dj_database_url
-from pathlib import Path
 import os
+from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET KEY') # default = 'ee27bea68b3974628043790694b74643'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'clave_por_defecto_no_segura')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "False") == "True" 
+DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1")
 
-ALLOWED_HOSTS = ["*"] if DEBUG else [os.environ.get("RENDER_EXTERNAL_HOSTNAME", "traffic-llm.onrender.com")]
-
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+# Configuración de ALLOWED_HOSTS
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+else:
+    host = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "traffic-llm.onrender.com")
+    ALLOWED_HOSTS = [host]
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -66,9 +63,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'traffic_llm.wsgi.application'
 
+
 # Database
 DATABASE_URL = os.getenv('DATABASE_URL')
-
 if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
@@ -83,8 +80,6 @@ else:
     }
 
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -101,28 +96,22 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = '/static/'
 
-if not DEBUG:   
+if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración del servicio de optimización
-OPTIMIZATION_SERVICE_URL = "http://127.0.0.1:5000/optimize"  # URL real (cámbiala según necesites)
-OPTIMIZATION_MODE = "test"  # Cambiar a "real" cuando se use el servicio externo
+# En producción, ajusta la URL y el modo según sea necesario.
+OPTIMIZATION_SERVICE_URL = os.environ.get('OPTIMIZATION_SERVICE_URL', "http://127.0.0.1:5000/optimize")
+OPTIMIZATION_MODE = os.environ.get('OPTIMIZATION_MODE', "test")  # Cambia a "real" cuando uses el servicio externo
+
