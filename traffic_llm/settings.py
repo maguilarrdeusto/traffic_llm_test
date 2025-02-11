@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET KEY') # default='ee27bea68b3974628043790694b74643'
+SECRET_KEY = os.environ.get('SECRET KEY') # default = 'ee27bea68b3974628043790694b74643'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True" 
@@ -77,18 +77,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'traffic_llm.wsgi.application'
 
-
 # Database
-# x
-
-DATABASE_URL = os.environ.get("DATABASE_URL_INTERNAL" if not DEBUG else "DATABASE_URL_EXTERNAL")
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=DATABASE_URL,
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'traffic_llm'),
+        'USER': os.getenv('DB_USER', 'traffic_llm_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Fkeb3oqgkfr4tM3aeIBkSysxhqbh062W'),
+        'HOST': os.getenv('DB_HOST', 'dpg-cukts123esus73b09tng-a.frankfurt-postgres.render.com'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
 }
+
+# Permite que Django use la variable de entorno DATABASE_URL en Render
+DATABASES['default'] = dj_database_url.config(default=os.getenv('DATABASE_URL'), conn_max_age=600)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -119,6 +121,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -133,4 +136,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuración del servicio de optimización
 OPTIMIZATION_SERVICE_URL = "http://127.0.0.1:5000/optimize"  # URL real (cámbiala según necesites)
 OPTIMIZATION_MODE = "test"  # Cambiar a "real" cuando se use el servicio externo
-
