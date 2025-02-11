@@ -23,13 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET KEY', default='012345678910abcdefghijklmnñopqrstuvwyz')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ   
+DEBUG = os.environ.get("DEBUG", "False") == "True" 
 
-ALLOWED_HOST = ['']
+ALLOWED_HOSTS = ["*"] if DEBUG else [os.environ.get("RENDER_EXTERNAL_HOSTNAME", "traffic-llm.onrender.com")]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOST.append(RENDER_EXTERNAL_HOSTNAME)
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Application definition
 
@@ -79,16 +79,16 @@ WSGI_APPLICATION = 'traffic_llm.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# x
+
+DATABASE_URL = os.environ.get("DATABASE_URL_INTERNAL" if not DEBUG else "DATABASE_URL_EXTERNAL")
 
 DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600
+    )
 }
-
-DATABASES["default"] = dj_database_url.parse("postgresql://traffic_agent_4yxu_user:LkFnNqjoX1llRnYc0XWY6Q9I8uXvq8dr@dpg-cuksiijtq21c73ebd5r0-a/traffic_agent_4yxu")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -108,7 +108,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -120,7 +119,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -129,9 +127,6 @@ STATIC_URL = '/static/'
 if not DEBUG:   
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
