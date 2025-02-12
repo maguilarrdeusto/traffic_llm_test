@@ -63,7 +63,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'traffic_llm.wsgi.application'
 
-
 # Database
 DATABASE_URL = os.getenv('DATABASE_URL')
 
@@ -115,4 +114,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuración del servicio de optimización
 # Puedes parametrizar la URL y el modo del servicio de optimización mediante variables de entorno
 OPTIMIZATION_SERVICE_URL = os.environ.get('OPTIMIZATION_SERVICE_URL', "http://127.0.0.1:5000/optimize")
-OPTIMIZATION_MODE = os.environ.get('OPTIMIZATION_MODE', "test")  # Cambia a "real" en producción si corresponde
+OPTIMIZATION_MODE = os.environ.get('OPTIMIZATION_MODE', "test")  # Cambia a "real" en producción si corresponde 
